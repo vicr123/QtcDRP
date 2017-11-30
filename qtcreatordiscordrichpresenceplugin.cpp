@@ -115,6 +115,8 @@ namespace QtCreatorDiscordRichPresence {
                 } else if (mimeType == "text/html") { //HTML File
                     smallImageKey = "file-html";
                     smallImageText = "HTML";
+                } else if (mimeType == "text/vnd.qtcreator.git.submit") { //Git commit
+
                 }
 
                 if (smallImageKey != nullptr && smallImageKey[0] == '\0') {
