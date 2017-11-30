@@ -91,7 +91,7 @@ namespace QtCreatorDiscordRichPresence {
                 } else if (mimeType == "text/x-csrc") { //C Source
                     smallImageKey = "file-csrc";
                     smallImageText = "C Source";
-                } else if (mimeType == "application/vnd.qt.qmakeprofile" || "application/vnd.qt.qmakeproincludefile") { //QMake Profile
+                } else if (mimeType == "application/vnd.qt.qmakeprofile" || mimeType == "application/vnd.qt.qmakeproincludefile") { //QMake Profile
                     smallImageKey = "file-qtprj";
                     smallImageText = "QMake Project Profile";
                 } else if (mimeType == "application/x-designer") { //Designer
@@ -115,7 +115,7 @@ namespace QtCreatorDiscordRichPresence {
                 } else if (mimeType == "text/html") { //HTML File
                     smallImageKey = "file-html";
                     smallImageText = "HTML";
-                } else if (mimeType == "text/vnd.qtcreator.git.submit") { //Git commit
+                } else if (mimeType == "text/vnd.qtcreator.git.submit") { //Git commit window
 
                 }
 
@@ -130,15 +130,17 @@ namespace QtCreatorDiscordRichPresence {
                 }
 
                 ProjectExplorer::Project* current = ProjectExplorer::ProjectTree::currentProject();
+                char stateString[256];
                 if (current == nullptr) {
                     if (editor->isDesignModePreferred()) {
-                        presence.state = "Designing some UI";
+                        sprintf(stateString, "Designing some UI");
                     } else {
-                        presence.state = "Editing a file";
+                        sprintf(stateString, "Editing a file");
                     }
                 } else {
-                    presence.state = current->displayName().prepend("Working on ").toUtf8().constData();
+                    sprintf(stateString, "%s", current->displayName().prepend("Working on ").toUtf8().data());
                 }
+                presence.state = stateString;
                 presence.details = editor->document()->filePath().fileName().toUtf8().constData();
                 presence.instance = 1;
                 Discord_UpdatePresence(&presence);
