@@ -1,0 +1,11 @@
+{
+    \"Name\" : \"QtCreatorDiscordRichPresence\",
+    \"Version\" : \"0.0.1\",
+    \"CompatVersion\" : \"0.0.1\",
+    \"Vendor\" : \"theSuite\",
+    \"Copyright\" : \"(C) theSuite 2017\",
+    \"License\" : \"GPL v3\",
+    \"Description\" : \"Integrate Qt Creator with Discord Rich Presence\",
+    \"Url\" : \"http://www.mycompany.com\",
+    $$dependencyList
+}
