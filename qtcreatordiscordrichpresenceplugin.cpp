@@ -9,6 +9,8 @@
 #include <coreplugin/coreconstants.h>
 #include <coreplugin/editormanager/editormanager.h>
 #include <coreplugin/editormanager/ieditor.h>
+#include <projectexplorer/project.h>
+#include <projectexplorer/projecttree.h>
 
 #include <QAction>
 #include <QMessageBox>
@@ -67,15 +69,10 @@ namespace QtCreatorDiscordRichPresence {
             //Connect to file editing signals
             connect(Core::EditorManager::instance(), &Core::EditorManager::currentEditorChanged, [=](Core::IEditor *editor) {
                 //qDebug() << editor->document()->filePath().fileName();
-
                 DiscordRichPresence presence;
                 memset(&presence, 0, sizeof(presence));
 
-                if (editor->isDesignModePreferred()) {
-                    presence.state = "Designing some UI";
-                } else {
-                    presence.state = "Editing a file";
-                }
+                if (editor == nullptr) return;
 
                 //Depending on file extension choose an icon
                 QString mimeType = editor->document()->mimeType();
@@ -88,12 +85,36 @@ namespace QtCreatorDiscordRichPresence {
                 } else if (mimeType == "text/x-c++src") { //C++ Source
                     smallImageKey = "file-cppsrc";
                     smallImageText = "C++ Source";
-                } else if (mimeType == "application/vnd.qt.qmakeprofile") { //QMake Profile
+                } else if (mimeType == "text/x-chdr") { //C Header
+                    smallImageKey = "file-chdr";
+                    smallImageText = "C Header";
+                } else if (mimeType == "text/x-csrc") { //C Source
+                    smallImageKey = "file-csrc";
+                    smallImageText = "C Source";
+                } else if (mimeType == "application/vnd.qt.qmakeprofile" || "application/vnd.qt.qmakeproincludefile") { //QMake Profile
                     smallImageKey = "file-qtprj";
                     smallImageText = "QMake Project Profile";
                 } else if (mimeType == "application/x-designer") { //Designer
                     smallImageKey = "file-qtui";
                     smallImageText = "Qt User Interface File";
+                } else if (mimeType == "application/vnd.qt.xml.resource") { //Qt Resource
+                    smallImageKey = "file-qtres";
+                    smallImageText = "Qt Resource File";
+                } else if (mimeType == "application/x-desktop") { //Desktop File
+                    smallImageKey = "file-desktop";
+                    smallImageText = "Desktop File";
+                } else if (mimeType == "application/json") { //JSON File
+                    smallImageKey = "file-json";
+                    smallImageText = "JSON File";
+                } else if (mimeType == "text/plain") { //Text File
+                    smallImageKey = "file-txt";
+                    smallImageText = "Plain Text";
+                } else if (mimeType == "application/xml") { //XML File
+                    smallImageKey = "file-xml";
+                    smallImageText = "XML";
+                } else if (mimeType == "text/html") { //HTML File
+                    smallImageKey = "file-html";
+                    smallImageText = "HTML";
                 }
 
                 if (smallImageKey != nullptr && smallImageKey[0] == '\0') {
@@ -106,6 +127,16 @@ namespace QtCreatorDiscordRichPresence {
                     presence.smallImageText = "Working with Qt Creator";
                 }
 
+                ProjectExplorer::Project* current = ProjectExplorer::ProjectTree::currentProject();
+                if (current == nullptr) {
+                    if (editor->isDesignModePreferred()) {
+                        presence.state = "Designing some UI";
+                    } else {
+                        presence.state = "Editing a file";
+                    }
+                } else {
+                    presence.state = current->displayName().prepend("Working on ").toUtf8().constData();
+                }
                 presence.details = editor->document()->filePath().fileName().toUtf8().constData();
                 presence.instance = 1;
                 Discord_UpdatePresence(&presence);
@@ -143,7 +174,6 @@ namespace QtCreatorDiscordRichPresence {
                 qDebug() << "Discord Disconnected!";
             };
             Discord_Initialize("385624695229120519", &handlers, true, nullptr);
-
         }
 
     } // namespace Internal
