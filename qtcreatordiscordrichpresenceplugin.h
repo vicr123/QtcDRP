@@ -23,9 +23,10 @@ namespace QtCreatorDiscordRichPresence {
                 ShutdownFlag aboutToShutdown();
 
             private:
-                QAction* rpAction;
+                //static QAction* rpAction;
 
                 void initDiscord();
+                QString oldProject = "";
         };
 
     } // namespace Internal

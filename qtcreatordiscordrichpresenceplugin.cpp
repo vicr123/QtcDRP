@@ -18,6 +18,21 @@
 #include <QMenu>
 #include <QDebug>
 
+QString getRandomAlphanumericString(int length) {
+    const QString possibleCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+
+    QString randomString;
+    for(int i = 0; i < length; i++)
+    {
+        int index = qrand() % possibleCharacters.length();
+        QChar nextChar = possibleCharacters.at(index);
+        randomString.append(nextChar);
+    }
+    return randomString;
+}
+
+//QAction* QtCreatorDiscordRichPresence::Internal::QtCreatorDiscordRichPresencePlugin::rpAction = QAction*();
+
 namespace QtCreatorDiscordRichPresence {
     namespace Internal {
 
@@ -137,11 +152,29 @@ namespace QtCreatorDiscordRichPresence {
                     } else {
                         sprintf(stateString, "Editing a file");
                     }
+                    oldProject = "";
                 } else {
                     sprintf(stateString, "%s", current->displayName().prepend("Working on ").toUtf8().data());
+
+                    if (oldProject != current->displayName()) {
+                        oldProject = current->displayName();
+
+                        presence.partySize = 1;
+                        presence.partyMax = 100;
+
+                        char partyId[256];
+                        sprintf(partyId, "%s", getRandomAlphanumericString(128).toUtf8().data());
+                        presence.partyId = partyId;
+
+                        presence.joinSecret = "This is the Join secret";
+                    }
                 }
                 presence.state = stateString;
-                presence.details = editor->document()->filePath().fileName().toUtf8().constData();
+
+                char detailsString[256];
+                sprintf(detailsString, "%s", editor->document()->filePath().fileName().toUtf8().data());
+                presence.details = detailsString;
+
                 presence.instance = 1;
                 Discord_UpdatePresence(&presence);
             });
@@ -177,6 +210,13 @@ namespace QtCreatorDiscordRichPresence {
             handlers.disconnected = [](int errorCode, const char* message) {
                 qDebug() << "Discord Disconnected!";
             };
+            /*handlers.joinGame = [](const char* joinSecret) {
+                //QString secret = QByteArray::fromBase64(QByteArray(joinSecret));
+                QByteArray secretBytes(joinSecret);
+                QString secret = QString::fromStdString(secretBytes.toStdString());
+                QMessageBox::warning(nullptr, "Discord Join", QString("Discord Join Secret: ").append(secret), QMessageBox::Ok, QMessageBox::Ok);
+                //qDebug() << secret;
+            };*/
             Discord_Initialize("385624695229120519", &handlers, true, nullptr);
         }
 
