@@ -3,7 +3,7 @@
 #include "qtcreatordiscordrichpresence_global.h"
 
 #include <extensionsystem/iplugin.h>
-#include <discord-rpc.h>
+#include <discord_rpc.h>
 #include <QAction>
 
 namespace QtCreatorDiscordRichPresence {
@@ -26,7 +26,7 @@ namespace QtCreatorDiscordRichPresence {
                 //static QAction* rpAction;
 
                 void initDiscord();
-                QString oldProject = "";
+                QString oldProject;
         };
 
     } // namespace Internal

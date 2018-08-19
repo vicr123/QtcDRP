@@ -201,7 +201,7 @@ namespace QtCreatorDiscordRichPresence {
         void QtCreatorDiscordRichPresencePlugin::initDiscord() {
             DiscordEventHandlers handlers;
             memset(&handlers, 0, sizeof(handlers));
-            handlers.ready = [] {
+            handlers.ready = [](const DiscordUser* user) {
                 qDebug() << "Discord Ready!";
             };
             handlers.errored = [](int errorCode, const char* message) {
@@ -210,13 +210,13 @@ namespace QtCreatorDiscordRichPresence {
             handlers.disconnected = [](int errorCode, const char* message) {
                 qDebug() << "Discord Disconnected!";
             };
-            /*handlers.joinGame = [](const char* joinSecret) {
+            handlers.joinGame = [](const char* joinSecret) {
                 //QString secret = QByteArray::fromBase64(QByteArray(joinSecret));
                 QByteArray secretBytes(joinSecret);
                 QString secret = QString::fromStdString(secretBytes.toStdString());
                 QMessageBox::warning(nullptr, "Discord Join", QString("Discord Join Secret: ").append(secret), QMessageBox::Ok, QMessageBox::Ok);
                 //qDebug() << secret;
-            };*/
+            };
             Discord_Initialize("385624695229120519", &handlers, true, nullptr);
         }
 
